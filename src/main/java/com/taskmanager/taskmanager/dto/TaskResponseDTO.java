@@ -1,29 +1,18 @@
-package com.taskmanager.taskmanager.model;
+package com.taskmanager.taskmanager.dto;
 
-import jakarta.persistence.*;
+import com.taskmanager.taskmanager.model.TaskStatus;
+import com.taskmanager.taskmanager.model.Priority;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "tasks")
-public class Task {
+public class TaskResponseDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String title;
     private String description;
-
-    @Enumerated(EnumType.STRING)
     private TaskStatus status;
-
-    @Enumerated(EnumType.STRING)
     private Priority priority;
-
     private LocalDate createdDate;
     private LocalDate dueDate;
-
-    // getters & setters
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

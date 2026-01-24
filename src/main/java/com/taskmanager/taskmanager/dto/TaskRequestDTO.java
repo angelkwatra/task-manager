@@ -1,32 +1,16 @@
-package com.taskmanager.taskmanager.model;
+package com.taskmanager.taskmanager.dto;
 
-import jakarta.persistence.*;
+import com.taskmanager.taskmanager.model.TaskStatus;
+import com.taskmanager.taskmanager.model.Priority;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "tasks")
-public class Task {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class TaskRequestDTO {
 
     private String title;
     private String description;
-
-    @Enumerated(EnumType.STRING)
     private TaskStatus status;
-
-    @Enumerated(EnumType.STRING)
     private Priority priority;
-
-    private LocalDate createdDate;
     private LocalDate dueDate;
-
-    // getters & setters
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
@@ -39,9 +23,6 @@ public class Task {
 
     public Priority getPriority() { return priority; }
     public void setPriority(Priority priority) { this.priority = priority; }
-
-    public LocalDate getCreatedDate() { return createdDate; }
-    public void setCreatedDate(LocalDate createdDate) { this.createdDate = createdDate; }
 
     public LocalDate getDueDate() { return dueDate; }
     public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
