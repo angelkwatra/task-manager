@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Manager</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+        }
+        input, select {
+            padding: 8px;
+            margin: 5px;
+        }
+        button {
+            padding: 8px 12px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .task {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Create Task</h2>
+
+<input id="title" placeholder="Title">
+<input id="description" placeholder="Description">
+
+<select id="status">
+    <option value="PENDING">PENDING</option>
+    <option value="IN_PROGRESS">IN_PROGRESS</option>
+    <option value="COMPLETED">COMPLETED</option>
+</select>
+
+<select id="priority">
+    <option value="LOW">LOW</option>
+    <option value="MEDIUM">MEDIUM</option>
+    <option value="HIGH">HIGH</option>
+</select>
+
+<input type="date" id="dueDate">
+
+<button id="submitBtn" onclick="createOrUpdateTask()">Create</button>
+
+<hr>
+
+<h2>All Tasks</h2>
+<button onclick="loadTasks()">Refresh</button>
+
+<div id="tasks"></div>
+
+<script>
+
+    const API = "http://localhost:8080/api/tasks";
+    let editingId = null;
+
+    function createOrUpdateTask() {
+
+        const task = {
+            title: document.getElementById("title").value,
+            description: document.getElementById("description").value,
+            status: document.getElementById("status").value,
+            priority: document.getElementById("priority").value,
+            dueDate: document.getElementById("dueDate").value
+        };
+
+        if (editingId === null) {
+            // CREATE
+            fetch(API, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(task)
+            })
+            .then(res => res.json())
+            .then(() => {
+                alert("Task Created!");
+                clearForm();
+                loadTasks();
+            });
+        } else {
+            // UPDATE
+            fetch(`${API}/${editingId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(task)
+            })
+            .then(res => res.json())
+            .then(() => {
+                alert("Task Updated!");
+                editingId = null;
+                document.getElementById("submitBtn").innerText = "Create";
+                clearForm();
+                loadTasks();
+            });
+        }
+    }
+
+    function loadTasks() {
+        fetch(API)
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById("tasks");
+                container.innerHTML = "";
+
+                data.forEach(task => {
+                    container.innerHTML += `
+                        <div class="task">
+                            <h3>${task.title}</h3>
+                            <p>${task.description}</p>
+                            <p>Status: ${task.status}</p>
+                            <p>Priority: ${task.priority}</p>
+                            <p>Due: ${task.dueDate}</p>
+                            <button onclick="editTask(${task.id})">Edit</button>
+                            <button onclick="deleteTask(${task.id})">Delete</button>
+                        </div>
+                    `;
+                });
+            });
+    }
+
+    function editTask(id) {
+        fetch(`${API}/${id}`)
+            .then(res => res.json())
+            .then(task => {
+                document.getElementById("title").value = task.title;
+                document.getElementById("description").value = task.description;
+                document.getElementById("status").value = task.status;
+                document.getElementById("priority").value = task.priority;
+                document.getElementById("dueDate").value = task.dueDate;
+
+                editingId = id;
+                document.getElementById("submitBtn").innerText = "Update";
+            });
+    }
+
+    function deleteTask(id) {
+        fetch(`${API}/${id}`, {
+            method: "DELETE"
+        }).then(() => loadTasks());
+    }
+
+    function clearForm() {
+        document.getElementById("title").value = "";
+        document.getElementById("description").value = "";
+        document.getElementById("dueDate").value = "";
+    }
+
+    loadTasks();
+
+</script>
+</body>
+</html>

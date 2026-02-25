@@ -7,7 +7,7 @@ import com.taskmanager.taskmanager.service.TaskService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
